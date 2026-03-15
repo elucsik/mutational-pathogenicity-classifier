@@ -233,3 +233,13 @@ results/
 *.fasta
 *.json
 *.log
+
+# data files
+data/
+results/
+
+# notebook junk
+.ipynb_checkpoints/
+
+# mac
+.DS_Store
