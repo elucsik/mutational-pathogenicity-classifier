@@ -1,34 +1,36 @@
 import requests
-import os
+from src.config import PDB_DIR
 
 
-def fetch_pdb_sequence(pdb_id, out_dir=".",fmt = "pdb"):
+def fetch_pdb_structure(pdb_id, fmt="cif", save_file=True):
     """
-    DOWNLOAD PDB/CIF STRUCTURE FILE FROM RSCB
+    Download a structure file from the RCSB PDB.
 
     Args:
-        pdb_id (str): PDB Identifier
-        out_dir (str): Output directory where PDB/CIF will be saved
-        fmt (str): file format ('pdb' or 'cif')
+        pdb_id (str): PDB identifier
+        fmt (str): file format ("pdb" or "cif")
+        save_file (bool): optionally save the structure file
 
-    Returns: 
-        Download: pdb/cif file
-        Path to downloaded file (str)
-    """    
-    #API CALL TO RSCB
+    Returns:
+        str: path to downloaded file if saved
+    """
+
     url = f"https://files.rcsb.org/download/{pdb_id.lower()}.{fmt}"
+
     r = requests.get(url)
-    r.raise_for_status() #flag unsuccessful responses as errors
+    r.raise_for_status()
 
-    #MAKE DIRECTORY FOR PDB/CIF FILE
-    os.makedirs(out_dir, exist_ok=True)
-    file_path = os.path.join(out_dir, f"{pdb_id}.{fmt}") #build file path
+    if save_file:
+        file_path = PDB_DIR / f"{pdb_id}.{fmt}"
 
-    #WRITE FILE
-    with open(file_path, 'w') as f:
-        f.write(r.text)
-    
-    return file_path
+        with open(file_path, "w") as f:
+            f.write(r.text)
+
+        return file_path
+
+    return r.text
+
 
 if __name__ == "__main__":
-    print(fetch_pdb_sequence('4PQE', 'data_fetch', 'cif'))
+    path = fetch_pdb_structure("1TUP")
+    print(path)
